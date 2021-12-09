@@ -65,6 +65,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+//функция для отображения транзакций
 const displayTransactions = function (transactions) {
   containerTransactions.innerHTML = '';
   transactions.forEach(function (trans, index) {
@@ -81,5 +82,33 @@ const displayTransactions = function (transactions) {
     containerTransactions.insertAdjacentHTML('afterbegin', transactionRow);
   });
 };
-
 displayTransactions(account1.transactions);
+
+//Добавление никнейма в объекты аккаунтов
+const createNickName = function (acc) {
+  acc.forEach(function (accs) {
+    accs.nickName = accs.userName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+createNickName(accounts);
+// console.log(accounts);
+
+// const userName = 'Oliver Avila'; // nick = 'oa'
+// const nickName = userName
+//   .toLowerCase()
+//   .split(' ')
+//   .map(word => word[0])
+//   .join('');
+// console.log(nickName);
+
+const displayBalance = function (transactions) {
+  const balance = transactions.reduce((acc, item) => {
+    return acc + item;
+  }, 0);
+  labelBalance.textContent = `${balance}$`;
+};
+displayBalance(account1.transactions);
