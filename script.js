@@ -1,7 +1,6 @@
 'use strict';
 
 // Simply Bank App
-
 const account1 = {
   userName: 'Cecil Ireland',
   transactions: [500, 250, -300, 5000, -850, -110, -170, 1100],
@@ -93,20 +92,12 @@ const createNickName = function (acc) {
   });
 };
 createNickName(accounts);
-// console.log(accounts);
 
-// const userName = 'Oliver Avila'; // nick = 'oa'
-// const nickName = userName
-//   .toLowerCase()
-//   .split(' ')
-//   .map(word => word[0])
-//   .join('');
-// console.log(nickName);
-
-const displayBalance = function (transactions) {
-  const balance = transactions.reduce((acc, item) => {
+const displayBalance = function (account) {
+  const balance = account.transactions.reduce((acc, item) => {
     return acc + item;
   }, 0);
+  account.balance = balance;
   labelBalance.textContent = `${balance}$`;
 };
 
@@ -147,7 +138,35 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginPin.blur();
 
     displayTransactions(currentAccount.transactions);
-    displayBalance(currentAccount.transactions);
+    displayBalance(currentAccount);
+    displayTotal(currentAccount);
+  }
+});
+
+//перевод денег другому аккаунту
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const transferAmount = Number(inputTransferAmount.value);
+  const recipientNickName = inputTransferTo.value;
+
+  const recipientAccount = accounts.find(
+    acc => acc.nickName == recipientNickName
+  );
+  inputTransferAmount.value = '';
+  inputTransferTo.value = '';
+
+  if (
+    recipientAccount &&
+    currentAccount.userName !== recipientAccount.userName &&
+    transferAmount > 0 &&
+    transferAmount <= Number(currentAccount.balance)
+  ) {
+    currentAccount.transactions.push(-transferAmount);
+    recipientAccount.transactions.push(transferAmount);
+
+    //перенести потом в отдельную функцию
+    displayTransactions(currentAccount.transactions);
+    displayBalance(currentAccount);
     displayTotal(currentAccount);
   }
 });
