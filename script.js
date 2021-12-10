@@ -82,8 +82,6 @@ const displayTransactions = function (transactions) {
     containerTransactions.insertAdjacentHTML('afterbegin', transactionRow);
   });
 };
-displayTransactions(account1.transactions);
-
 //Добавление никнейма в объекты аккаунтов
 const createNickName = function (acc) {
   acc.forEach(function (accs) {
@@ -111,23 +109,45 @@ const displayBalance = function (transactions) {
   }, 0);
   labelBalance.textContent = `${balance}$`;
 };
-displayBalance(account1.transactions);
 
-const displayTotal = function (transactions) {
-  const dipositesTotal = transactions
+const displayTotal = function (account) {
+  const dipositesTotal = account.transactions
     .filter(trans => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumIn.textContent = `${dipositesTotal}$`;
 
-  const withdrawalTotal = transactions
+  const withdrawalTotal = account.transactions
     .filter(trans => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumOut.textContent = `${withdrawalTotal}$`;
 
-  const interestTotal = transactions
+  const interestTotal = account.transactions
     .filter(trans => trans > 0)
-    .map(depos => (depos * 1.1) / 100)
+    .map(depos => (depos * account.interest) / 100)
     .reduce((acc, item) => acc + item, 0);
   labelSumInterest.textContent = `${interestTotal}$`;
 };
-displayTotal(account1.transactions);
+
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    account => account.nickName === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    containerApp.style.opacity = 100;
+
+    labelWelcome.textContent = `Рады, что вы снова с нами, ${
+      currentAccount.userName.split(' ')[0]
+    }!`;
+
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginUsername.blur();
+    inputLoginPin.blur();
+
+    displayTransactions(currentAccount.transactions);
+    displayBalance(currentAccount.transactions);
+    displayTotal(currentAccount);
+  }
+});
