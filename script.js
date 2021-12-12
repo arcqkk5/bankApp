@@ -170,3 +170,24 @@ btnTransfer.addEventListener('click', function (e) {
     displayTotal(currentAccount);
   }
 });
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  const checkName = inputCloseUsername.value;
+  const checkPassword = Number(inputClosePin.value);
+  if (
+    checkName &&
+    checkPassword &&
+    checkName === currentAccount.nickName &&
+    checkPassword === currentAccount.pin
+  ) {
+    const currentAccountIndex = accounts.findIndex(
+      acc => acc.nickName === currentAccount.nickName
+    );
+    accounts.splice(currentAccountIndex, 1);
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = 'Войдите в свой аккаунт!';
+  }
+  inputClosePin.value = '';
+  inputCloseUsername.value = '';
+});
