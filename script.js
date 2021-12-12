@@ -191,3 +191,19 @@ btnClose.addEventListener('click', function (e) {
   inputClosePin.value = '';
   inputCloseUsername.value = '';
 });
+
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const loanAmount = Number(inputLoanAmount.value);
+  if (
+    loanAmount > 0 &&
+    currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
+  ) {
+    currentAccount.transactions.push(loanAmount);
+
+    displayTransactions(currentAccount.transactions);
+    displayBalance(currentAccount);
+    displayTotal(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
