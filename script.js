@@ -123,6 +123,26 @@ const day = `${now.getDate()}`.padStart(2, '0');
 const mounth = `${now.getMonth() + 1}`.padStart(2, '0');
 const year = now.getFullYear();
 labelDate.textContent = `${day}/ ${mounth}/ ${year}`;
+
+const startLogoutTimer = function () {
+  let time = 300;
+  const logOutTimerFunction = function () {
+    const minute = String(Math.trunc(time / 60)).padStart(2, '0');
+    const seconds = String(time % 60).padStart(2, '0');
+
+    labelTimer.textContent = `${minute}:${seconds}`;
+    if (time === 0) {
+      clearInterval(logOutTimer);
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = 'Войдите в свой аккаунт!';
+    }
+    time--;
+  };
+  logOutTimerFunction();
+  const logOutTimer = setInterval(logOutTimerFunction, 1000);
+  return logOutTimer;
+};
+
 //функция для отображения транзакций
 
 const formatTransactionDates = function (date) {
@@ -204,7 +224,8 @@ const displayTotal = function (account) {
   labelSumInterest.textContent = `${interestTotal.toFixed(2)}$`;
 };
 
-let currentAccount;
+let currentAccount, currentLogOut;
+
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
   currentAccount = accounts.find(
@@ -221,6 +242,9 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginPin.value = '';
     inputLoginUsername.blur();
     inputLoginPin.blur();
+
+    if (currentLogOut) clearInterval(currentLogOut);
+    currentLogOut = startLogoutTimer();
 
     displayTransactions(currentAccount);
     displayBalance(currentAccount);
@@ -256,6 +280,9 @@ btnTransfer.addEventListener('click', function (e) {
     displayTransactions(currentAccount);
     displayBalance(currentAccount);
     displayTotal(currentAccount);
+
+    clearInterval(currentLogOut);
+    currentLogOut = startLogoutTimer();
   }
 });
 
@@ -287,15 +314,20 @@ btnLoan.addEventListener('click', function (e) {
     loanAmount > 0 &&
     currentAccount.transactions.some(trans => trans >= (loanAmount * 10) / 100)
   ) {
-    currentAccount.transactions.push(loanAmount);
+    setTimeout(function () {
+      currentAccount.transactions.push(loanAmount);
 
-    currentAccount.transactionsDates.push(new Date().toISOString());
+      currentAccount.transactionsDates.push(new Date().toISOString());
 
-    displayTransactions(currentAccount);
-    displayBalance(currentAccount);
-    displayTotal(currentAccount);
+      displayTransactions(currentAccount);
+      displayBalance(currentAccount);
+      displayTotal(currentAccount);
+    }, 5000);
   }
   inputLoanAmount.value = '';
+
+  clearInterval(currentLogOut);
+  currentLogOut = startLogoutTimer();
 });
 
 let isSort = false;
@@ -303,10 +335,7 @@ btnSort.addEventListener('click', function (e) {
   e.preventDefault();
   displayTransactions(currentAccount, !isSort);
   isSort = !isSort;
-});
 
-// [...document.querySelectorAll('.transactions__row')].forEach(function (row, i) {
-//   if (i % 2 === 0) {
-//     row.style.backgroundColor = 'grey';
-//   }
-// });
+  clearInterval(currentLogOut);
+  currentLogOut = startLogoutTimer();
+});
