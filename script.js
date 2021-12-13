@@ -13,8 +13,8 @@ const account1 = {
     '2021-01-22T12:17:46.255Z',
     '2021-02-12T15:14:06.486Z',
     '2021-03-09T11:42:26.371Z',
-    '2021-05-21T07:43:59.331Z',
-    '2021-06-22T15:21:20.814Z',
+    '2021-12-10T07:43:59.331Z',
+    '2021-12-12T15:21:20.814Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -124,6 +124,23 @@ const mounth = `${now.getMonth() + 1}`.padStart(2, '0');
 const year = now.getFullYear();
 labelDate.textContent = `${day}/ ${mounth}/ ${year}`;
 //функция для отображения транзакций
+
+const formatTransactionDates = function (date) {
+  const getDaysBetween2Dates = (date1, date2) =>
+    Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
+
+  const daysPassed = getDaysBetween2Dates(new Date(), date);
+  if (daysPassed === 0) return 'Сегодня';
+  if (daysPassed === 1) return 'Вчера';
+  if (daysPassed <= 4) return `${daysPassed} дня назад`;
+  else {
+    const dayTrans = `${date.getDate()}`.padStart(2, '0');
+    const mounthTrans = `${date.getMonth() + 1}`.padStart(2, '0');
+    const yearTrans = date.getFullYear();
+    return `${dayTrans}/ ${mounthTrans}/ ${yearTrans}`;
+  }
+};
+
 const displayTransactions = function (accounts, sort = false) {
   containerTransactions.innerHTML = '';
 
@@ -135,10 +152,7 @@ const displayTransactions = function (accounts, sort = false) {
     const transType = trans > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(accounts.transactionsDates[index]);
-    const dayTrans = `${date.getDate()}`.padStart(2, '0');
-    const mounthTrans = `${date.getMonth() + 1}`.padStart(2, '0');
-    const yearTrans = date.getFullYear();
-    const transDate = `${dayTrans}/ ${mounthTrans}/ ${yearTrans}`;
+    const transDate = formatTransactionDates(date);
 
     const transactionRow = `
       <div class="transactions__row">
